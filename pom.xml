@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.mvel</groupId>
+    <groupId>org.mule.mvel</groupId>
     <artifactId>mvel2</artifactId>
     <packaging>jar</packaging>
     <version>2.1.3.Final</version>
@@ -104,8 +104,8 @@
                     <archive>
                         <manifestFile>META-INF/MANIFEST.MF</manifestFile>
                         <manifest>
-                            <mainClass>org.mvel2.sh.Main</mainClass>
-                            <packageName>org.mvel2</packageName>
+                            <mainClass>org.mule.mvel2.sh.Main</mainClass>
+                            <packageName>org.mule.mvel2</packageName>
                         </manifest>
                     </archive>
                 </configuration>
@@ -184,7 +184,7 @@
                 <configuration>
                     <manifestLocation>META-INF</manifestLocation>
                     <instructions>
-                        <Bundle-SymbolicName>org.mvel2</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>org.mule.mvel2</Bundle-SymbolicName>
                         <Bundle-Name>mvel2</Bundle-Name>
                         <Import-Package>sun.*;resolution:=optional, *</Import-Package>
                     </instructions>
@@ -227,12 +227,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.hibernate</groupId>-->
-        <!--<artifactId>ejb3-persistence</artifactId>-->
-        <!--<version>1.0.2.GA</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>        -->
     </dependencies>
 
     <distributionManagement>
