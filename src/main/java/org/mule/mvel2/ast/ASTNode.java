@@ -112,7 +112,11 @@ public class ASTNode implements Cloneable, Serializable {
       }
     }
     else {
-      return optimize(ctx, thisValue, factory);
+      Object o = optimize(ctx, thisValue, factory);
+      if (o == null) {
+        accessor = null;
+      }
+      return o;
     }
   }
 

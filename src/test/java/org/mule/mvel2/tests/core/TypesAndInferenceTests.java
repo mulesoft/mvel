@@ -77,6 +77,7 @@ public class TypesAndInferenceTests extends AbstractTest {
     assertEquals("dog", executeExpression(s, vars));
   }
 
+
   public void testGenericInference2() {
     ParserContext ctx;
     MVEL.analysisCompile("$result = person.maptributes['fooey'].name",
@@ -1668,6 +1669,25 @@ public class TypesAndInferenceTests extends AbstractTest {
     new ObjectOutputStream(baos).writeObject(compiledAccExpression);
     CompiledAccExpression readCompiledAccExpression = (CompiledAccExpression) new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray())).readObject();
     assertNull(readCompiledAccExpression.getAccessor());
+  }
+
+  public void testInputTypeChange() {
+    MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+    Serializable expr = MVEL.compileExpression("foo.name");
+
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("foo", "foo");
+
+    Object property = MVEL.executeExpression(expr, map);
+    assertEquals(null, property);
+
+    Bar bar = new Bar();
+    bar.setName("bar");
+    map.clear();
+    map.put("foo", bar);
+
+    property = MVEL.executeExpression(expr, map);
+    assertEquals("bar", property);
   }
 
   public static class Message {
