@@ -1670,6 +1670,30 @@ public class TypesAndInferenceTests extends AbstractTest {
     assertNull(readCompiledAccExpression.getAccessor());
   }
 
+  /**
+   * If the compiled expression is applied to a payload that does not have a property (e.g. String payload)
+   * it should correctly return a null value, but if then the payload is transformed to another type that
+   * has the mentioned property, the compiled expression should adapt to correctly calculate it.
+   */
+  public void testInputTypeChange() {
+    MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+    Serializable expr = MVEL.compileExpression("foo.name");
+
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("foo", "foo");
+
+    Object property = MVEL.executeExpression(expr, map);
+    assertNull(property);
+
+    Bar bar = new Bar();
+    bar.setName("bar");
+    map.clear();
+    map.put("foo", bar);
+
+    property = MVEL.executeExpression(expr, map);
+    assertEquals("bar", property);
+  }
+
   public static class Message {
     public Object payload;
 
