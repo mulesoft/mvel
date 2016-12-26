@@ -19,6 +19,7 @@
 package org.mule.mvel2.ast;
 
 import org.mule.mvel2.CompileException;
+import org.mule.mvel2.MVEL;
 import org.mule.mvel2.ParserConfiguration;
 import org.mule.mvel2.ParserContext;
 import org.mule.mvel2.compiler.Accessor;
@@ -112,11 +113,11 @@ public class ASTNode implements Cloneable, Serializable {
       }
     }
     else {
-      Object o = optimize(ctx, thisValue, factory);
-      if (o == null) {
+      Object result = optimize(ctx, thisValue, factory);
+      if (MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL && result == null) {
         accessor = null;
       }
-      return o;
+      return result;
     }
   }
 

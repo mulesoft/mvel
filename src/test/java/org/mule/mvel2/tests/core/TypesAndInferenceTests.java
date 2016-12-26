@@ -77,7 +77,6 @@ public class TypesAndInferenceTests extends AbstractTest {
     assertEquals("dog", executeExpression(s, vars));
   }
 
-
   public void testGenericInference2() {
     ParserContext ctx;
     MVEL.analysisCompile("$result = person.maptributes['fooey'].name",
@@ -1671,15 +1670,20 @@ public class TypesAndInferenceTests extends AbstractTest {
     assertNull(readCompiledAccExpression.getAccessor());
   }
 
+  /**
+   * If the compiled expression is applied to a payload that does not have a property (e.g. String payload)
+   * it should correctly return a null value, but if then the payload is transformed to another type that
+   * has the mentioned property, the compiled expression should adapt to correctly calculate it.
+   */
   public void testInputTypeChange() {
     MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
     Serializable expr = MVEL.compileExpression("foo.name");
 
-    HashMap<String, Object> map = new HashMap<String, Object>();
+    Map<String, Object> map = new HashMap<String, Object>();
     map.put("foo", "foo");
 
     Object property = MVEL.executeExpression(expr, map);
-    assertEquals(null, property);
+    assertNull(property);
 
     Bar bar = new Bar();
     bar.setName("bar");
