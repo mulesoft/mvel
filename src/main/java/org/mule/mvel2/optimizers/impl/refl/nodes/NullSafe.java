@@ -26,6 +26,10 @@ public class NullSafe implements AccessorNode {
       final Accessor a = OptimizerFactory.getAccessorCompiler(OptimizerFactory.SAFE_REFLECTIVE)
           .optimizeAccessor(pCtx, expr, start, offset, ctx, elCtx, variableFactory, true, ctx.getClass());
 
+      if (a instanceof NullSafe) {
+        return null;
+      }
+
       nextNode = new AccessorNode() {
         public AccessorNode getNextNode() {
           return null;

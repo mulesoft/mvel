@@ -113,11 +113,7 @@ public class ASTNode implements Cloneable, Serializable {
       }
     }
     else {
-      Object result = optimize(ctx, thisValue, factory);
-      if (MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL && result == null) {
-        accessor = null;
-      }
-      return result;
+      return optimize(ctx, thisValue, factory);
     }
   }
 
