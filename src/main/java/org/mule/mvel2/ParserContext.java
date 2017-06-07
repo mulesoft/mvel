@@ -1002,6 +1002,10 @@ public class ParserContext implements Serializable {
     return parserConfiguration.isAllowBootstrapBypass();
   }
 
+  public boolean isTryStaticAccess() {
+      return parserConfiguration.isTryStaticAccess();
+    }
+
   public void setAllowBootstrapBypass(boolean allowBootstrapBypass) {
     parserConfiguration.setAllowBootstrapBypass(allowBootstrapBypass);
   }
