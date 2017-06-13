@@ -26,6 +26,10 @@ public class NullSafe implements AccessorNode {
       final Accessor a = OptimizerFactory.getAccessorCompiler(OptimizerFactory.SAFE_REFLECTIVE)
           .optimizeAccessor(pCtx, expr, start, offset, ctx, elCtx, variableFactory, true, ctx.getClass());
 
+      // This is intended to avoid an infinite recursion.
+      // A null safe bean property should return null in  
+      // order to end the evaluation process when the 
+      // there is no key found.
       if (a instanceof NullSafe) {
         return null;
       }

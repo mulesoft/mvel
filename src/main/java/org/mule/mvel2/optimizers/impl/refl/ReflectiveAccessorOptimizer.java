@@ -763,7 +763,6 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
         }
         else {
           addAccessorNode(new NullSafe(property.toCharArray(), 0, property.length(), pCtx));
-          //addAccessorNode(new NullAccessor());
         }
         return null;
       }
