@@ -687,7 +687,9 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
 
       Object staticReference = null;
       if (MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL) {
-        staticReference = tryStaticAccess();
+        if (pCtx.isTryStaticAccess()) {
+            staticReference = tryStaticAccess();
+        }
         staticAccess = true;
       }
 
@@ -709,7 +711,10 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
       return ctx;
     }
     else {
-      Object tryStaticMethodRef = tryStaticAccess();
+      Object tryStaticMethodRef = null;
+      if (pCtx.isTryStaticAccess()) {  
+          tryStaticMethodRef = tryStaticAccess();          
+      }
       staticAccess = true;
       if (tryStaticMethodRef != null) {
         return processStaticReference(tryStaticMethodRef);

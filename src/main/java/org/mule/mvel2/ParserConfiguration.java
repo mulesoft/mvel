@@ -49,6 +49,8 @@ public class ParserConfiguration implements Serializable {
   private boolean allowNakedMethCall = MVEL.COMPILER_OPT_ALLOW_NAKED_METH_CALL;
 
   private boolean allowBootstrapBypass = true;
+  
+  private boolean tryStaticAccess = true;
 
   static {
     String negCacheSize = System.getProperty("mvel2.compiler.max_neg_cache_size");
@@ -314,5 +316,13 @@ public class ParserConfiguration implements Serializable {
 
   public void setAllowBootstrapBypass(boolean allowBootstrapBypass) {
     this.allowBootstrapBypass = allowBootstrapBypass;
+  }
+
+  public boolean isTryStaticAccess() {
+    return tryStaticAccess;
+  }
+    
+  public void setTryStaticAccess(boolean tryStaticAccess) {
+    this.tryStaticAccess = tryStaticAccess;
   }
 }
