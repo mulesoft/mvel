@@ -18,6 +18,8 @@
 
 package org.mule.mvel2.ast;
 
+import static java.util.Arrays.copyOf;
+
 import java.io.Serializable;
 
 public class ArraySize implements Serializable {
@@ -26,4 +28,19 @@ public class ArraySize implements Serializable {
   }
 
   public char[] value;
+
+  public ArraySize getCopy () {
+    return new ArraySize(copyOf(value, value.length));
+  }
+
+  public static ArraySize [] getArraySizeCopy(ArraySize [] originalArraySize) {
+    if (originalArraySize != null) {
+      ArraySize arraySizeCopy[] = new ArraySize[originalArraySize.length];
+      for (int i = 0; i < originalArraySize.length; i++) {
+        arraySizeCopy[i] = originalArraySize[i].getCopy();
+      }
+      return arraySizeCopy;
+    }
+    return null;
+  }
 }

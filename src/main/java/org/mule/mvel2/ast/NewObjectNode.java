@@ -18,6 +18,7 @@
 package org.mule.mvel2.ast;
 
 import static java.lang.reflect.Array.newInstance;
+import static java.util.Arrays.copyOf;
 import static org.mule.mvel2.DataConversion.convert;
 import static org.mule.mvel2.MVEL.analyze;
 import static org.mule.mvel2.MVEL.eval;
@@ -148,6 +149,17 @@ public class NewObjectNode extends ASTNode {
         }
       }
     }
+  }
+
+  public NewObjectNode(NewObjectNode newObjectNode) {
+    super(newObjectNode.pCtx);
+    this.typeDescr = newObjectNode.typeDescr.getCopy();
+    this.fields = newObjectNode.fields;
+    this.expr = copyOf(newObjectNode.expr, newObjectNode.expr.length);
+    this.start = newObjectNode.start;
+    this.offset = newObjectNode.offset;
+    this.name = copyOf(newObjectNode.name, newObjectNode.name.length);
+    this.egressType = newObjectNode.getEgressType();
   }
 
   private void rewriteClassReferenceToFQCN(int fields) {
@@ -366,5 +378,9 @@ public class NewObjectNode extends ASTNode {
 
   public Accessor getNewObjectOptimizer() {
     return newObjectOptimizer;
+  }
+
+  public NewObjectNode getCopy () {
+    return new NewObjectNode(this);
   }
 }

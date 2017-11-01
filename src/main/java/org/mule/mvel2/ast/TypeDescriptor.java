@@ -26,11 +26,13 @@ import org.mule.mvel2.integration.VariableResolverFactory;
 import org.mule.mvel2.util.ParseTools;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import static java.lang.Character.isDigit;
 import static org.mule.mvel2.ast.ASTNode.COMPILE_IMMEDIATE;
+import static org.mule.mvel2.ast.ArraySize.getArraySizeCopy;
 import static org.mule.mvel2.util.ArrayTools.findFirst;
 import static org.mule.mvel2.util.ParseTools.*;
 import static org.mule.mvel2.util.ReflectionUtil.toPrimitiveArrayType;
@@ -48,6 +50,15 @@ public class TypeDescriptor implements Serializable {
 
   public TypeDescriptor(char[] name, int start, int offset, int fields) {
     updateClassName(this.expr = name, this.start = start, this.offset = offset, fields);
+  }
+
+  private TypeDescriptor(TypeDescriptor typeDescriptor) {
+    this.className = typeDescriptor.className;
+    this.expr = Arrays.copyOf(typeDescriptor.expr, typeDescriptor.expr.length);
+    this.start = typeDescriptor.start;
+    this.offset = typeDescriptor.offset;
+    this.arraySize = getArraySizeCopy(typeDescriptor.arraySize);
+    this.compiledArraySize = typeDescriptor.compiledArraySize;
   }
 
   public void updateClassName(char[] name, int start, int offset, int fields) {
@@ -217,4 +228,9 @@ public class TypeDescriptor implements Serializable {
   public int getOffset() {
     return offset;
   }
+
+  public TypeDescriptor getCopy () {
+    return new TypeDescriptor(this);
+  }
+
 }
