@@ -36,16 +36,10 @@ public class ExecutableAccessor implements ExecutableStatement {
   }
 
   public Object getValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory) {
-    if (node instanceof NewObjectNode) {
-      return ((NewObjectNode) node).getCopy().getReducedValueAccelerated(ctx, elCtx, variableFactory);
-    }
     return node.getReducedValueAccelerated(ctx, elCtx, variableFactory);
   }
 
   public Object getValue(Object staticContext, VariableResolverFactory factory) {
-    if (node instanceof NewObjectNode) {
-      return ((NewObjectNode) node).getCopy().getReducedValueAccelerated(staticContext, staticContext, factory);
-    }
     return node.getReducedValueAccelerated(staticContext, staticContext, factory);
   }
 

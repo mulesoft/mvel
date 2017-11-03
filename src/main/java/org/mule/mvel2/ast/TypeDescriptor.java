@@ -52,15 +52,6 @@ public class TypeDescriptor implements Serializable {
     updateClassName(this.expr = name, this.start = start, this.offset = offset, fields);
   }
 
-  private TypeDescriptor(TypeDescriptor typeDescriptor) {
-    this.className = typeDescriptor.className;
-    this.expr = Arrays.copyOf(typeDescriptor.expr, typeDescriptor.expr.length);
-    this.start = typeDescriptor.start;
-    this.offset = typeDescriptor.offset;
-    this.arraySize = getArraySizeCopy(typeDescriptor.arraySize);
-    this.compiledArraySize = typeDescriptor.compiledArraySize;
-  }
-
   public void updateClassName(char[] name, int start, int offset, int fields) {
     this.expr = name;
 
@@ -227,10 +218,6 @@ public class TypeDescriptor implements Serializable {
 
   public int getOffset() {
     return offset;
-  }
-
-  public TypeDescriptor getCopy () {
-    return new TypeDescriptor(this);
   }
 
 }

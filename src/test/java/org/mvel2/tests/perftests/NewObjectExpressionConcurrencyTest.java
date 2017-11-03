@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.TestCase;
 import org.mvel2.tests.perftests.utils.EchoFunction;
 
-public class FunctionCallConcurrencyTest extends TestCase {
+public class NewObjectExpressionConcurrencyTest extends TestCase {
 
 	private static int NUMBER_OF_THREADS= 10000;
 	private static String FUNCTION_DEFINITION = "def echo(echoMessage) {return new EchoFunction().echo(echoMessage);}";
@@ -40,7 +40,7 @@ public class FunctionCallConcurrencyTest extends TestCase {
 		echoFunction = functionMap.get("echo");
 	}
 
-	public void testConcurrentFunctionCall() throws InterruptedException {
+	public void testConcurrentNewObjectExpression() throws InterruptedException {
 		for (int i = 0; i < NUMBER_OF_THREADS; i ++) {
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
