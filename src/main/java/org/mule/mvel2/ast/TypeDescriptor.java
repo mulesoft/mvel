@@ -26,13 +26,11 @@ import org.mule.mvel2.integration.VariableResolverFactory;
 import org.mule.mvel2.util.ParseTools;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import static java.lang.Character.isDigit;
 import static org.mule.mvel2.ast.ASTNode.COMPILE_IMMEDIATE;
-import static org.mule.mvel2.ast.ArraySize.getArraySizeCopy;
 import static org.mule.mvel2.util.ArrayTools.findFirst;
 import static org.mule.mvel2.util.ParseTools.*;
 import static org.mule.mvel2.util.ReflectionUtil.toPrimitiveArrayType;
@@ -135,15 +133,15 @@ public class TypeDescriptor implements Serializable {
   public void setEndRange(int endRange) {
     this.endRange = endRange;
   }
-  
+
   public Class<?> getClassReference() throws ClassNotFoundException {
     return getClassReference(null, this);
   }
-  
+
   public Class<?> getClassReference(ParserContext ctx) throws ClassNotFoundException {
     return getClassReference(ctx,this);
   }
-  
+
   public static Class getClassReference(Class baseType,
                                         TypeDescriptor tDescr,
                                         VariableResolverFactory factory, ParserContext ctx) throws ClassNotFoundException {
@@ -219,5 +217,4 @@ public class TypeDescriptor implements Serializable {
   public int getOffset() {
     return offset;
   }
-
 }

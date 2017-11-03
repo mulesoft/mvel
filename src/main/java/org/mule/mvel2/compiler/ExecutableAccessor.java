@@ -19,7 +19,6 @@
 package org.mule.mvel2.compiler;
 
 import org.mule.mvel2.ast.ASTNode;
-import org.mule.mvel2.ast.NewObjectNode;
 import org.mule.mvel2.ast.TypeCast;
 import org.mule.mvel2.integration.VariableResolverFactory;
 
