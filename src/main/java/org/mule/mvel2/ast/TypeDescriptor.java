@@ -217,4 +217,5 @@ public class TypeDescriptor implements Serializable {
   public int getOffset() {
     return offset;
   }
+
 }
