@@ -588,4 +588,20 @@ public class PropertyAccessTests extends AbstractTest {
     a.put("inner", nestMap);
     assertEquals("bar", MVEL.executeExpression(s, m));
   }
+
+  public void testAccessPropertyInsideForWithOptionals() {
+    String returnValue = "Hello world";
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = Collections.singletonMap("a", a);
+
+    String ex = "for (int i = 0; i < a.?value.?size(); i++) { return a.?value[i]; }";
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertNull(MVEL.executeExpression(s, m));
+
+    List<String> list = new ArrayList<String>();
+    list.add(returnValue);
+    a.put("value", list);
+    assertEquals(returnValue, MVEL.executeExpression(s, m));
+  }
 }

@@ -30,7 +30,7 @@ public class NullSafe implements AccessorNode {
       // A null safe bean property should return null in  
       // order to end the evaluation process when the 
       // there is no key found.
-      if (a instanceof NullSafe) {
+      if (a == null || a instanceof NullSafe) {
         return null;
       }
 
