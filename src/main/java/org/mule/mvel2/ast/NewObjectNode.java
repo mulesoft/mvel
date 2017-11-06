@@ -194,7 +194,7 @@ public class NewObjectNode extends ASTNode {
            * we have to attempt runtime resolution.
            */
 
-          if (egressType != null && factory != null && factory.isResolveable(typeDescr.getClassName())) {
+          if (egressType == null && factory != null && factory.isResolveable(typeDescr.getClassName())) {
             try {
               egressType = (Class) factory.getVariableResolver(typeDescr.getClassName()).getValue();
               rewriteClassReferenceToFQCN(COMPILE_IMMEDIATE);
