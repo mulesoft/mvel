@@ -592,7 +592,7 @@ public class PropertyAccessTests extends AbstractTest {
   public void testAccessPropertyInsideForWithOptionals() {
     String returnValue = "Hello world";
     Map<String, Object> a = new HashMap<String, Object>();
-    Map m = Collections.singletonMap("a", a);
+    Map<String, Map<String, Object>> m = Collections.singletonMap("a", a);
 
     String ex = "for (int i = 0; i < a.?value.?size(); i++) { return a.?value[i]; }";
 
