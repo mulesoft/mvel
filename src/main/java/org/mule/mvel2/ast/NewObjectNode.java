@@ -185,29 +185,35 @@ public class NewObjectNode extends ASTNode {
     if (newObjectOptimizer == null) {
       if (egressType == null) {
         /**
-         * This means we couldn't resolve the type at the time this AST node was created, which means
-         * we have to attempt runtime resolution.
+         * This initialization should be done only once. In all the remaining calls, the factory argument will be ignored.
+         * Synchronized block guarantees consistency in heavy load.
          */
+        synchronized (this) {
+          /**
+           * This means we couldn't resolve the type at the time this AST node was created, which means
+           * we have to attempt runtime resolution.
+           */
 
-        if (factory != null && factory.isResolveable(typeDescr.getClassName())) {
-          try {
-            egressType = (Class) factory.getVariableResolver(typeDescr.getClassName()).getValue();
-            rewriteClassReferenceToFQCN(COMPILE_IMMEDIATE);
+          if (egressType == null && factory != null && factory.isResolveable(typeDescr.getClassName())) {
+            try {
+              egressType = (Class) factory.getVariableResolver(typeDescr.getClassName()).getValue();
+              rewriteClassReferenceToFQCN(COMPILE_IMMEDIATE);
 
-            if (typeDescr.isArray()) {
-              try {
-                egressType = findClass(factory,
-                    repeatChar('[', typeDescr.getArrayLength()) + "L" + egressType.getName() + ";", pCtx);
+              if (typeDescr.isArray()) {
+                try {
+                  egressType = findClass(factory,
+                                         repeatChar('[', typeDescr.getArrayLength()) + "L" + egressType.getName() + ";", pCtx);
+                }
+                catch (Exception e) {
+                  // for now, don't handle this.
+                }
               }
-              catch (Exception e) {
-                // for now, don't handle this.
-              }
+
             }
-
-          }
-          catch (ClassCastException e) {
-            throw new CompileException("cannot construct object: " + typeDescr.getClassName()
-                + " is not a class reference", expr, start, e);
+            catch (ClassCastException e) {
+              throw new CompileException("cannot construct object: " + typeDescr.getClassName()
+                                         + " is not a class reference", expr, start, e);
+            }
           }
         }
       }
@@ -367,4 +373,5 @@ public class NewObjectNode extends ASTNode {
   public Accessor getNewObjectOptimizer() {
     return newObjectOptimizer;
   }
+
 }

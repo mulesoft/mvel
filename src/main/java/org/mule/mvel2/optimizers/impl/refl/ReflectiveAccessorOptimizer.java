@@ -475,6 +475,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
         }
       }
 
+      if (curr != null) returnType = curr.getClass();
       val = curr;
       return rootNode;
     }
@@ -1398,6 +1399,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
         ca = compiledOptimizer.getRootNode();
 
         this.val = compiledOptimizer.getResultOptPass();
+        this.returnType = compiledOptimizer.getEgressType();
       }
 
       return ca;
