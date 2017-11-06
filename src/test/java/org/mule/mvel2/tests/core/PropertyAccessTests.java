@@ -599,7 +599,7 @@ public class PropertyAccessTests extends AbstractTest {
     Serializable s = MVEL.compileExpression(ex);
     assertNull(MVEL.executeExpression(s, m));
 
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList();
     list.add(returnValue);
     a.put("value", list);
     assertEquals(returnValue, MVEL.executeExpression(s, m));
