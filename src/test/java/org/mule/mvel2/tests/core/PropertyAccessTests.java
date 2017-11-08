@@ -1,7 +1,11 @@
 package org.mule.mvel2.tests.core;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.mule.mvel2.MVEL.compileExpression;
 import static org.mule.mvel2.MVEL.executeExpression;
+
+import org.junit.Ignore;
 import org.mule.mvel2.MVEL;
 import org.mule.mvel2.ParserContext;
 import org.mule.mvel2.integration.PropertyHandler;
@@ -455,7 +459,7 @@ public class PropertyAccessTests extends AbstractTest {
   public void testMVEL226() {
     MVEL.COMPILER_OPT_ALLOW_OVERRIDE_ALL_PROPHANDLING = true;
     A226 a = new A226();
-    Map m = Collections.singletonMap("a", a);
+    Map m = singletonMap("a", a);
     Map<String, Object> nestMap = Collections.<String, Object>singletonMap("foo", "bar");
     String ex = "a.?map['foo']";
     Serializable s;
@@ -479,7 +483,7 @@ public class PropertyAccessTests extends AbstractTest {
 
     public void testInfiniteLoop() {
       A226 a = new A226();
-      Map m = Collections.singletonMap("a", a);
+      Map m = singletonMap("a", a);
       String ex = "a.map['foo']";
 
       try {
@@ -515,7 +519,7 @@ public class PropertyAccessTests extends AbstractTest {
       // Array -> List
       vars.put("foo", new String[]{"1", "2", "3"});
       assertEquals("1", MVEL.executeExpression(getFooExpression, vars));
-      vars.put("foo", Collections.singletonList("1"));
+      vars.put("foo", singletonList("1"));
       assertEquals("1", MVEL.executeExpression(getFooExpression, vars));
       
       // List -> Array
@@ -577,7 +581,7 @@ public class PropertyAccessTests extends AbstractTest {
   public void testExpressionCacheAfterMissingOptionalProperty() {
     MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
     Map a = new HashMap<String, Object>();
-    Map m = Collections.singletonMap("a", a);
+    Map m = singletonMap("a", a);
     Map<String, Object> nestMap = Collections.<String, Object> singletonMap("foo", "bar");
     String ex = "a.?inner.foo";
     Serializable s;
@@ -592,7 +596,7 @@ public class PropertyAccessTests extends AbstractTest {
   public void testAccessPropertyInsideForWithOptionals() {
     String returnValue = "Hello world";
     Map<String, Object> a = new HashMap<String, Object>();
-    Map<String, Map<String, Object>> m = Collections.singletonMap("a", a);
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
 
     String ex = "for (int i = 0; i < a.?value.?size(); i++) { return a.?value[i]; }";
 
@@ -604,4 +608,134 @@ public class PropertyAccessTests extends AbstractTest {
     a.put("value", list);
     assertEquals(returnValue, MVEL.executeExpression(s, m));
   }
+
+  public void testAccessPropertyAfterOptionalProperty() {
+    MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+    String payload = "payload value";
+    Map<String, String> m = new HashMap<String, String>();
+    m.put("payload", payload);
+
+    String ex1 = "payload.?value.getClass().getName()";
+    String ex2 = "Object a = new Object(); a.?sarasa.getClass().getName()";
+
+    Serializable s1 = MVEL.compileExpression(ex1);
+    assertEquals(null, MVEL.executeExpression(s1, m));
+    assertEquals(null, MVEL.executeExpression(s1, m));
+
+    Serializable s2 = MVEL.compileExpression(ex2);
+    assertEquals(null, MVEL.executeExpression(s2, m));
+    assertEquals(null, MVEL.executeExpression(s2, m));
+  }
+
+  public void testAccessMapValueChange() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    Map<String, Map<String, String>> nestMap1 = singletonMap("foo", singletonMap("bar", "foobar1"));
+    Map<String, Map<String, String>> nestMap2 = singletonMap("foo", singletonMap("bar", "foobar2"));
+
+    String ex = "a.inner.foo.bar";
+    a.put("inner", nestMap1);
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertEquals("foobar1", MVEL.executeExpression(s, m));
+    a.put("inner", nestMap2);
+    assertEquals("foobar2", MVEL.executeExpression(s, m));
+  }
+
+
+  public void testAccessMapTypeChangeToList() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    Map<String, Map<String, String>> nestMap = singletonMap("foo", singletonMap("bar", "foobar1"));
+    Map<String, List<String>> nestList = singletonMap("foo", singletonList("bar"));
+
+    String ex = "a.inner.foo";
+    a.put("inner", nestMap);
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertEquals(nestMap.get("foo"), MVEL.executeExpression(s, m));
+    a.put("inner", nestList);
+    assertEquals(nestList.get("foo"), MVEL.executeExpression(s, m));
+  }
+
+  public void testAccessOptionalMap() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    Map<String, Map<String, String>> nestMap = singletonMap("foo", singletonMap("bar", "foobar"));
+
+    String ex = "a.?inner.foo.bar";
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", nestMap);
+    assertEquals("foobar", MVEL.executeExpression(s, m));
+  }
+
+  public void testAccessOptionalListWithMap() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    List<Map<String, String>> nestMap = singletonList(singletonMap("foo", "bar"));
+
+    String ex = "a.?inner[0].foo";
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", nestMap);
+    assertEquals("bar", MVEL.executeExpression(s, m));
+  }
+
+  public void testAccessOptionalListWithMapOfMap() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    List<Map<String, Map<String, String>>> nestMap = singletonList(singletonMap("foo", singletonMap("bar", "foobar")));
+
+    String ex = "a.?inner[0].foo.bar";
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", nestMap);
+    assertEquals("foobar", MVEL.executeExpression(s, m));
+  }
+
+  @Ignore("MULE-13988")
+  public void testAccessOptionalListWithOptionalMapOfMap() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    List<Map<String, Map<String, String>>> nestList = singletonList(singletonMap("foo", singletonMap("bar", "foobar")));
+
+    String ex = "a.?inner[0].?foo.bar";
+
+    Serializable s = MVEL.compileExpression(ex);
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", singletonList(Collections.emptyMap()));
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", nestList);
+    assertEquals("foobar", MVEL.executeExpression(s, m));
+  }
+
+  @Ignore("MULE-13988")
+  public void testAccessWithOptionalMapOfOptionalMap() {
+    Map<String, Object> a = new HashMap<String, Object>();
+    Map<String, Map<String, Object>> m = singletonMap("a", a);
+
+    Map<String, Map<String, String>> nestMap = singletonMap("foo", singletonMap("bar", "foobar"));
+
+    String ex = "a.?inner.?foo.?bar";
+
+    Serializable s = MVEL.compileExpression(ex);
+    a.put("inner", Collections.emptyMap());
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", singletonMap("foo", Collections.emptyMap()));
+    assertNull(MVEL.executeExpression(s, m));
+    a.put("inner", nestMap);
+    assertEquals("foobar", MVEL.executeExpression(s, m));
+  }
+
+
 }

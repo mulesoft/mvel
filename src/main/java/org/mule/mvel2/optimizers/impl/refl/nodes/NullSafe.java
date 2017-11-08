@@ -12,6 +12,7 @@ public class NullSafe implements AccessorNode {
   private int start;
   private int offset;
   private ParserContext pCtx;
+  private Accessor innerAccessor;
 
   public NullSafe(char[] expr, int start, int offset, ParserContext pCtx) {
     this.expr = expr;
@@ -22,45 +23,26 @@ public class NullSafe implements AccessorNode {
 
   public Object getValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory) {
     if (ctx == null) return null;
-    if (nextNode == null) {
-      final Accessor a = OptimizerFactory.getAccessorCompiler(OptimizerFactory.SAFE_REFLECTIVE)
-          .optimizeAccessor(pCtx, expr, start, offset, ctx, elCtx, variableFactory, true, ctx.getClass());
-
-      // This is intended to avoid an infinite recursion.
-      // A null safe bean property should return null in  
-      // order to end the evaluation process when the 
-      // there is no key found.
-      if (a == null || a instanceof NullSafe) {
-        return null;
-      }
-
-      nextNode = new AccessorNode() {
-        public AccessorNode getNextNode() {
-          return null;
-        }
-
-        public AccessorNode setNextNode(AccessorNode accessorNode) {
-          return null;
-        }
-
-        public Object getValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory) {
-          return a.getValue(ctx, elCtx, variableFactory);
-        }
-
-        public Object setValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory, Object value) {
-          return a.setValue(ctx, elCtx, variableFactory, value);
-        }
-
-        public Class getKnownEgressType() {
-          return a.getKnownEgressType();
-        }
-      };
-
-
+    if(innerAccessor == null) {
+      innerAccessor = OptimizerFactory.getAccessorCompiler(OptimizerFactory.SAFE_REFLECTIVE)
+              .optimizeAccessor(pCtx, expr, start, offset, ctx, elCtx, variableFactory, true, ctx.getClass());
     }
-    //   else {
-    return nextNode.getValue(ctx, elCtx, variableFactory);
-    //    }
+
+    // This is intended to avoid an infinite recursion.
+    // A null safe bean property should return null in
+    // order to end the evaluation process when the
+    // there is no key found.
+    if (innerAccessor instanceof NullSafe) {
+      return null;
+    }
+
+    Object value = innerAccessor.getValue(ctx, elCtx, variableFactory);
+    if (nextNode != null && value != null) {
+      return nextNode.getValue(value, elCtx, variableFactory);
+    }
+    else {
+      return value;
+    }
   }
 
   public Object setValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory, Object value) {
