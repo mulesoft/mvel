@@ -18,7 +18,7 @@ import org.mvel2.tests.perftests.utils.EchoFunction;
 
 public class NewObjectExpressionConcurrencyTest extends TestCase {
 
-	private static int NUMBER_OF_THREADS= 10000;
+	private static int NUMBER_OF_THREADS= 1000;
 	private static String FUNCTION_DEFINITION = "def echo(echoMessage) {return new EchoFunction().echo(echoMessage);}";
 
 	private final CountDownLatch startLatch = new CountDownLatch(1);
