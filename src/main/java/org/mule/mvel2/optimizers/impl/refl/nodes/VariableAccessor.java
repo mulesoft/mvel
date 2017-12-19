@@ -34,7 +34,15 @@ public class VariableAccessor implements AccessorNode {
       throw new RuntimeException("cannot access property in optimized accessor: " + property);
 
     if (nextNode != null) {
-      return nextNode.getValue(vrf.getVariableResolver(property).getValue(), elCtx, vrf);
+      Object variableCtx = vrf.getVariableResolver(property).getValue();
+      // In case the variable context to evaluate the nextToken
+      // is null, a NPE is raised in an explicit way, so that
+      // the expression execution fails, as it is trying to
+      // obtain the value of a null. 
+      if (variableCtx == null) {
+          throw new NullPointerException();
+      }
+      return nextNode.getValue(variableCtx, elCtx, vrf);
     }
     else {
       return vrf.getVariableResolver(property).getValue();
