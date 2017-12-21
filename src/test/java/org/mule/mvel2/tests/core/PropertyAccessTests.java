@@ -578,6 +578,72 @@ public class PropertyAccessTests extends AbstractTest {
     assertEquals(Foo.STATIC_BAR, runSingleTest("org.mule.mvel2.tests.core.res.Foo.STATIC_BAR"));
   }
 
+  public void testVariableAccessorNotCaching() {
+    try {
+        MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+        String ex = "payload.foo";
+
+
+        Map m = new HashMap<String, Object>();
+        Serializable s = null;
+        s = MVEL.compileExpression(ex);
+        // First we execute the expression for the case
+        // where payload is null.
+        // In this case, an exception must be raised.
+        testWhenPayloadIsNull(m, s);
+
+        // Then we set payload to be resolved as
+        // an instance of an object that does not
+        // have either a getter nor a field
+        // for foo. In this case. Null must be
+        // returned and the variable accessor
+        // must be set.
+        testWhenPayloadIsNotNull(m, s);
+
+        // Then we reset the payload to null.
+        // An exception must be again raised,
+        // even if the variable accesor has been
+        // set in the previous execution.
+        testWhenPayloadIsResetToNull(m, s);
+    }
+    finally {
+        MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = false;
+    }
+  }
+
+  private void testWhenPayloadIsResetToNull(Map m, Serializable s) {
+      m.clear();
+      m.put("payload", null);
+      
+      try {       
+          MVEL.executeExpression(s, m);
+       } catch (Exception e) {
+          return;
+       }
+      
+      fail("No exception was raised, though it had to.");
+  }
+
+  private void testWhenPayloadIsNotNull(Map m, Serializable s) {
+    m.put("payload", "test");
+      
+      assertNull(MVEL.executeExpression(s, m));
+  }
+
+  private void testWhenPayloadIsNull(Map m, Serializable s) {
+    boolean wasException = false;
+    try {
+        MVEL.executeExpression(s, m);
+    }
+    catch (Exception e) {
+        wasException = true;
+    }
+
+    if (!wasException) {
+        fail("Payload was not null and it should have been.");
+    }
+  }
+  
   public void testExpressionCacheAfterMissingOptionalProperty() {
     MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
     Map a = new HashMap<String, Object>();
