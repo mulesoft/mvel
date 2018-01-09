@@ -10,6 +10,7 @@ import org.mule.mvel2.integration.VariableResolverFactory;
 import org.mule.mvel2.optimizers.OptimizerFactory;
 import org.mule.mvel2.tests.core.res.Base;
 import org.mule.mvel2.tests.core.res.Cake;
+import org.mule.mvel2.tests.core.res.CustomMap;
 import org.mule.mvel2.tests.core.res.Foo;
 
 import java.io.Serializable;
@@ -604,4 +605,22 @@ public class PropertyAccessTests extends AbstractTest {
     a.put("value", list);
     assertEquals(returnValue, MVEL.executeExpression(s, m));
   }
+
+  public void testChainedInvocationWithObjectsThatHaveSameMethodSignature() {
+    OptimizerFactory.setDefaultOptimizer(OptimizerFactory.SAFE_REFLECTIVE);
+    MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+
+    Map context = new HashMap();
+    CustomMap customMap = new CustomMap();
+    Foo foo = new Foo();
+    foo.setMapTest(Collections.singletonMap("customMap", customMap));
+    context.put("foo", foo);
+
+    Serializable mapAccessExpression = MVEL.compileExpression("foo.getMapTest().customMap.remove(1)");
+
+    MVEL.executeExpression(mapAccessExpression, context);
+
+    assertTrue(customMap.getRemoveInvocations() == 1);
+  }
+
 }
