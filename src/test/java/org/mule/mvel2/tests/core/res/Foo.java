@@ -1,6 +1,7 @@
 package org.mule.mvel2.tests.core.res;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class Foo {
   private Bar bar = new Bar();
@@ -13,6 +14,7 @@ public class Foo {
   private char charTest;
   public char charTestFld;
   private Collection collectionTest;
+  private Map mapTest;
   private SampleBean sampleBean = new SampleBean();
   public Bar publicBar = new Bar();
   public static final Bar STATIC_BAR = new Bar();
@@ -108,6 +110,16 @@ public class Foo {
 
   public void setCharArrayMulti(char[][] charArrayMulti) {
     this.charArrayMulti = charArrayMulti;
+  }
+
+  public Map getMapTest()
+  {
+    return mapTest;
+  }
+
+  public void setMapTest(Map mapTest)
+  {
+    this.mapTest = mapTest;
   }
 
   public boolean equals(Object o) {

@@ -704,7 +704,9 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
       else
       {
         addAccessorNode(new MapAccessor(property));
-        return ((Map) ctx).get(property);
+        Object result = ((Map) ctx).get(property);
+        currType = result != null ? toNonPrimitiveType(result.getClass()) : null;
+        return result;
       }
     }
     else if (ctx != null && "length".equals(property) && ctx.getClass().isArray()) {
