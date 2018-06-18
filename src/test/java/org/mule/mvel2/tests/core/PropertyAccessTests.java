@@ -694,6 +694,25 @@ public class PropertyAccessTests extends AbstractTest {
     assertEquals(null, MVEL.executeExpression(s2, m));
   }
 
+  public void testAccessPropertyAfterOptionalPropertyChanges() {
+    MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+    Exception exceptionHolder = new Exception();
+    Map<String, Object> m = new HashMap<String, Object>();
+    m.put("exceptionHolder", exceptionHolder);
+
+    String ex1 = "exceptionHolder.?cause.getMessage()";
+
+    Serializable s1 = MVEL.compileExpression(ex1);
+    assertEquals(null, MVEL.executeExpression(s1, m));
+    assertEquals(null, MVEL.executeExpression(s1, m));
+
+    exceptionHolder = new Exception(new Exception("Message"));
+    m.put("exceptionHolder", exceptionHolder);
+    Serializable s2 = MVEL.compileExpression(ex1);
+    assertEquals("Message", MVEL.executeExpression(s2, m));
+    assertEquals("Message", MVEL.executeExpression(s2, m));
+  }
+
   public void testAccessMapValueChange() {
     Map<String, Object> a = new HashMap<String, Object>();
     Map<String, Map<String, Object>> m = singletonMap("a", a);
@@ -709,7 +728,6 @@ public class PropertyAccessTests extends AbstractTest {
     a.put("inner", nestMap2);
     assertEquals("foobar2", MVEL.executeExpression(s, m));
   }
-
 
   public void testAccessMapTypeChangeToList() {
     Map<String, Object> a = new HashMap<String, Object>();
