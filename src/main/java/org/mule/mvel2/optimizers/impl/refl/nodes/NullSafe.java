@@ -36,12 +36,11 @@ public class NullSafe implements AccessorNode {
       return null;
     }
 
-    Object value = innerAccessor.getValue(ctx, elCtx, variableFactory);
-    if (nextNode != null && value != null) {
-      return nextNode.getValue(value, elCtx, variableFactory);
+    if (nextNode != null) {
+      return nextNode.getValue(ctx, elCtx, variableFactory);
     }
     else {
-      return value;
+      return innerAccessor.getValue(ctx, elCtx, variableFactory);
     }
   }
 
