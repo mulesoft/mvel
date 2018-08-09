@@ -9,6 +9,7 @@ import org.mule.mvel2.compiler.ExpressionCompiler;
 import org.mule.mvel2.tests.core.res.Foo;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,6 +123,16 @@ public class InlineCollectionsTests extends AbstractTest {
     Map m = (Map) test("[new String('foo') : new String('bar')]");
 
     assertEquals("bar", m.get("foo"));
+  }
+  
+  public void testMoreThanOneNestedCollectionResolvesPathOk() {
+    ArrayList array = (ArrayList) test("[{\"b\" : [\"c\"],\"a\" : {\"d\" : \"e\"}}]");
+    ArrayList arrayOtherOrder = (ArrayList) test("[{\"a\" : {\"d\" : \"e\"},\"b\" : [\"c\"]}]");
+
+    assertEquals("c", ((ArrayList) ((Map) array.get(0)).get("b")).get(0));
+    assertEquals("c", ((ArrayList) ((Map) arrayOtherOrder.get(0)).get("b")).get(0));
+    assertEquals("e", ((Map) ((Map) array.get(0)).get("a")).get("d"));
+    assertEquals("e", ((Map) ((Map) arrayOtherOrder.get(0)).get("a")).get("d"));
   }
 
   public void testMVEL179() {
