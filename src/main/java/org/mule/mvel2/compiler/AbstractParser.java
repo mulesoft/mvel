@@ -2837,4 +2837,62 @@ public class AbstractParser implements Parser, Serializable {
   public void setPCtx(ParserContext pCtx) {
     this.debugSymbols = (this.pCtx = pCtx).isDebugSymbols();
   }
+  
+  /**
+   * @param c - character to scan to.
+   * @return - returns true is end of statement is hit, false if the scan scar is countered.
+   */
+  protected boolean scanTo(char c) {
+    for (; cursor < end; cursor++) {
+      switch (getExpressionForCollectionAccesor()[cursor]) {
+        case '\'':
+        case '"':
+          cursor = captureStringLiteral(getExpressionForCollectionAccesor()[cursor], getExpressionForCollectionAccesor(), cursor, end);
+        default:
+          if (getExpressionForCollectionAccesor()[cursor] == c) {
+            return false;
+          }
+      }
+    }
+    return true;
+  }
+
+  protected void scanCollectionAccessor(RuntimeException exceptionOnFail, int start) {
+    String exprToCompile = null;
+      while (cursor < end) {
+        if (scanTo(']')) {
+          actionOnErrorAccessingCollectionAccessor(exceptionOnFail);
+         }
+        exprToCompile = new String(getExpressionForCollectionAccesor(), start, cursor - start);
+        if (count(exprToCompile, '[') == count(exprToCompile, ']')) {
+          break;
+        }
+
+            cursor++;
+     }
+  }
+    
+  protected char[] getExpressionForCollectionAccesor() {
+    return expr;
+  }
+
+  protected void actionOnErrorAccessingCollectionAccessor(RuntimeException e) {
+    // Override
+  }
+
+  private int count(String expr, char character) {
+    if (expr == null) {
+      return 0;
+    }
+
+    int count = 0;
+    
+    for (byte c : expr.getBytes()) {
+      if (c == character) {
+         count++;
+      }
+    }
+
+   return count;
+  }
 }

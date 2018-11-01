@@ -310,8 +310,7 @@ public class ASMAccessorOptimizer extends AbstractOptimizer implements AccessorO
         if (st == end)
           throw new PropertyAccessException("unterminated '['", expr, start);
 
-        if (scanTo(']'))
-          throw new PropertyAccessException("unterminated '['", expr, start);
+        scanCollectionAccessor(new PropertyAccessException("unterminated '['", expr, start), st);
 
         String ex = new String(expr, st, cursor - st).trim();
 
@@ -1347,8 +1346,7 @@ private Object optimizeFieldMethodProperty(Object ctx, String property, Class<?>
       if (cursor == end)
           throw new CompileException("unterminated '['", expr, st);
 
-      if (scanTo(']'))
-          throw new CompileException("unterminated '['", expr, st);
+      scanCollectionAccessor(new CompileException("unterminated '['", expr, st), start);
 
       String tk = new String(expr, start, cursor - start);
       ++cursor;
@@ -1523,8 +1521,7 @@ private Object optimizeFieldMethodProperty(Object ctx, String property, Class<?>
     if (cursor == end)
       throw new CompileException("unterminated '['", expr, st);
 
-    if (scanTo(']'))
-      throw new CompileException("unterminated '['", expr, st);
+    scanCollectionAccessor(new CompileException("unterminated '['", expr, st), st);
 
     String tk = new String(expr, _start, cursor - _start);
 
