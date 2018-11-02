@@ -120,6 +120,14 @@ public class PropertyAccessTests extends AbstractTest {
   public void testMapAccess() {
     assertEquals("dog", test("funMap['foo'].bar.name"));
   }
+  
+  public void testMultipleMapAccess() {
+      assertEquals("dog", test("secondMap['innerMap']['foo'].bar.name"));
+  }
+  
+  public void testMultipleMapAccessNested() {
+      assertEquals("dog", test("secondMap['innerMap'][propertyNames['foo']].bar.name"));
+  }
 
   public void testMapAccess2() {
     assertEquals("dog", test("funMap.foo.bar.name"));

@@ -264,8 +264,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
         if (cursor == end)
           throw new PropertyAccessException("unterminated '['", expr, this.start);
 
-        if (scanTo(']'))
-          throw new PropertyAccessException("unterminated '['", expr, this.start);
+        scanCollectionAccessor(new PropertyAccessException("unterminated '['", expr, this.start), st);
 
         String ex = new String(property, st, cursor - st);
 
@@ -827,8 +826,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
 
     String item;
 
-    if (scanTo(']'))
-      throw new CompileException("unterminated '['", this.expr, this.start);
+    scanCollectionAccessor(new PropertyAccessException("unterminated '['", expr, this.start), start);
 
     item = new String(expr, start, cursor - start);
 
@@ -930,8 +928,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
 
     String item;
 
-    if (scanTo(']'))
-      throw new CompileException("unterminated '['", this.expr, this.start);
+    scanCollectionAccessor(new PropertyAccessException("unterminated '['", expr, this.start), _start);
 
     item = new String(expr, _start, cursor - _start);
 

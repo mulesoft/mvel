@@ -69,6 +69,14 @@ public abstract class AbstractTest extends TestCase {
     map.put("b", null);
     map.put("c", "cat");
     map.put("BWAH", "");
+    Map propertyNames = new HashMap();
+    propertyNames.put("foo", "foo");
+    map.put("propertyNames", propertyNames);
+    Map secondMap = new HashMap();
+    Map innerMap = new HashMap();
+    innerMap.put("foo", new Foo());
+    secondMap.put("innerMap", innerMap);
+    map.put("secondMap", secondMap);
 
     map.put("misc", new MiscTestClass());
 
@@ -137,6 +145,7 @@ public abstract class AbstractTest extends TestCase {
     threads = new Thread[threadCount];
 
     final Collection<Object> results = Collections.synchronizedCollection(new LinkedList<Object>());
+    System.out.println("results: " + results);
     final Collection<Throwable> exceptions = Collections.synchronizedCollection(new LinkedList<Throwable>());
     long time = currentTimeMillis();
 

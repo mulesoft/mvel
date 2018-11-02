@@ -18,6 +18,7 @@
 package org.mule.mvel2;
 
 import org.mule.mvel2.ast.*;
+import org.mule.mvel2.compiler.AbstractParser;
 import org.mule.mvel2.integration.GlobalListenerFactory;
 import org.mule.mvel2.integration.VariableResolverFactory;
 import org.mule.mvel2.integration.impl.ImmutableDefaultFactory;
@@ -37,8 +38,6 @@ import static org.mule.mvel2.DataConversion.canConvert;
 import static org.mule.mvel2.DataConversion.convert;
 import static org.mule.mvel2.MVEL.eval;
 import static org.mule.mvel2.ast.TypeDescriptor.getClassReference;
-import static org.mule.mvel2.compiler.AbstractParser.LITERALS;
-import static org.mule.mvel2.compiler.AbstractParser.getCurrentThreadParserContext;
 import static org.mule.mvel2.integration.GlobalListenerFactory.notifySetListeners;
 import static org.mule.mvel2.integration.PropertyHandlerFactory.*;
 import static org.mule.mvel2.util.ParseTools.*;
@@ -53,14 +52,9 @@ import static org.mule.mvel2.util.Varargs.paramTypeVarArgsSafe;
 /**
  * The property accessor class is used for extracting properties from objects instances.
  */
-public class PropertyAccessor {
-  private int start = 0;
-  private int cursor = 0;
-  private int st;
-
+public class PropertyAccessor extends AbstractParser {
   private char[] property;
   private int length;
-  private int end;
 
   private Object thisReference;
   private Object ctx;
@@ -175,7 +169,7 @@ public class PropertyAccessor {
 
   private Object getNormal() throws Exception {
     while (cursor < end) {
-      switch (nextToken()) {
+      switch (nextPropertyToken()) {
         case NORM:
           curr = getBeanProperty(curr, capture());
           break;
@@ -209,7 +203,7 @@ public class PropertyAccessor {
 
   private Object getAllowOverride() throws Exception {
     while (cursor < end) {
-      switch (nextToken()) {
+      switch (nextPropertyToken()) {
         case NORM:
           if ((curr = getBeanPropertyAO(curr, capture())) == null && hasNullPropertyHandler()) {
             curr = getNullPropertyHandler().getProperty(capture(), ctx, variableFactory);
@@ -263,14 +257,16 @@ public class PropertyAccessor {
 
       end = oLength;
 
-      if (nextToken() == COL) {
+      if (nextPropertyToken() == COL) {
         int _start = ++cursor;
 
         whiteSpaceSkip();
 
-        if (cursor == length || scanTo(']'))
+        if (cursor == length)
           throw new PropertyAccessException("unterminated '['", property, cursor);
 
+        scanCollectionAccessor(new PropertyAccessException("unterminated '['", property, cursor), _start);
+        
         String ex = new String(property, _start, cursor - _start);
 
         if (!MVEL.COMPILER_OPT_ALLOW_OVERRIDE_ALL_PROPHANDLING) {
@@ -395,7 +391,7 @@ public class PropertyAccessor {
   }
 
 
-  private int nextToken() {
+  private int nextPropertyToken() {
     switch (property[st = cursor]) {
       case '[':
         return COL;
@@ -733,24 +729,14 @@ public class PropertyAccessor {
       while (isWhitespace(property[cursor]) && ++cursor < end) ;
   }
 
-  /**
-   * @param c - character to scan to.
-   * @return - returns true is end of statement is hit, false if the scan scar is countered.
-   */
-  private boolean scanTo(char c) {
-    for (; cursor < end; cursor++) {
-      switch (property[cursor]) {
-        case '\'':
-        case '"':
-          cursor = captureStringLiteral(property[cursor], property, cursor, end);
-        default:
-          if (property[cursor] == c) {
-            return false;
-          }
-      }
+  @Override
+  protected char[] getExpressionForCollectionAccesor() {
+      return property;
+  }
 
-    }
-    return true;
+  @Override
+  protected void actionOnErrorAccessingCollectionAccessor(RuntimeException e) {
+      throw e;
   }
 
   private Object getWithProperty(Object ctx) {
@@ -787,8 +773,10 @@ public class PropertyAccessor {
 
     whiteSpaceSkip();
 
-    if (cursor == end || scanTo(']'))
+    if (cursor == end)
       throw new PropertyAccessException("unterminated '['", property, cursor);
+    
+    scanCollectionAccessor(new PropertyAccessException("unterminated '['", property, cursor), _start);
 
     prop = new String(property, _start, cursor++ - _start);
 
@@ -836,8 +824,10 @@ public class PropertyAccessor {
 
     whiteSpaceSkip();
 
-    if (cursor == end || scanTo(']'))
+    if (cursor == end)
       throw new PropertyAccessException("unterminated '['", property, cursor);
+    
+    scanCollectionAccessor(new PropertyAccessException("unterminated '['", property, cursor), _start);
 
     prop = new String(property, _start, cursor++ - _start);
 

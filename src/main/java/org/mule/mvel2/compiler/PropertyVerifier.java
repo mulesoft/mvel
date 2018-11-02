@@ -385,6 +385,11 @@ public class PropertyVerifier extends AbstractOptimizer {
     return m.getReturnType();
   }
 
+  @Override
+  protected void actionOnErrorAccessingCollectionAccessor(RuntimeException e) {
+    addFatalError("unterminated [ in token");
+  }
+  
   /**
    * Process collection property
    *
@@ -436,9 +441,7 @@ public class PropertyVerifier extends AbstractOptimizer {
 
     int start = cursor;
 
-    if (scanTo(']')) {
-      addFatalError("unterminated [ in token");
-    }
+    scanCollectionAccessor(null, start);
 
     MVEL.analysisCompile(new String(expr, start, cursor - start), pCtx);
 
