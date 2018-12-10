@@ -283,7 +283,7 @@
 
     <profiles>
         <profile>
-            <id>sonatype</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -339,7 +339,10 @@
                     </plugin>
                 </plugins>
             </build>
-            <distributionManagement>
+        </profile>
+        <profile>
+            <id>sonatype</id>
+             <distributionManagement>
                 <snapshotRepository>
                     <id>ossrh</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
