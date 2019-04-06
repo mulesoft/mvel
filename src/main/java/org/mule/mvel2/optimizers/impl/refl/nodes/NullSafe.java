@@ -33,6 +33,7 @@ public class NullSafe implements AccessorNode {
     // order to end the evaluation process when the
     // there is no key found.
     if (innerAccessor instanceof NullSafe) {
+      innerAccessor = null;
       return null;
     }
 
