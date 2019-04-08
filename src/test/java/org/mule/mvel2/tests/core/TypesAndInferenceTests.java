@@ -1693,6 +1693,33 @@ public class TypesAndInferenceTests extends AbstractTest {
     property = MVEL.executeExpression(expr, map);
     assertEquals("bar", property);
   }
+  
+  /**
+   * If the compiled expression is applied to a payload that does not have a property (e.g. String payload)
+   * it should correctly return a null value. If executed several times with same payload, it should always return
+   * null value. But if then the payload is transformed to another type that has the mentioned property, the compiled 
+   * expression should adapt to correctly calculate it.
+   */
+  public void testInputTypeChangeSeveralPreviousAccess() {
+    MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
+    Serializable expr = MVEL.compileExpression("foo.name");
+
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("foo", "foo");
+    Object property;
+    for (int i = 0; i < 10; i++) {
+        property = MVEL.executeExpression(expr, map);
+        assertNull(property);
+    }
+
+    Bar bar = new Bar();
+    bar.setName("bar");
+    map.clear();
+    map.put("foo", bar);
+
+    property = MVEL.executeExpression(expr, map);
+    assertEquals("bar", property);
+  }
 
   public static class Message {
     public Object payload;
