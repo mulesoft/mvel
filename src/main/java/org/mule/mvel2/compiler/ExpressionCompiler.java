@@ -295,7 +295,8 @@ public class ExpressionCompiler extends AbstractParser {
       }
 
       if (!verifyOnly) {
-        return new CompiledExpression(finalizePayload(astBuild, secondPassOptimization, pCtx), pCtx.getSourceFile(), returnType, pCtx.getParserConfiguration(), literalOnly == 1);
+        ASTLinkedList finalizedPayload = finalizePayload(astBuild, secondPassOptimization, pCtx);
+        return new CompiledExpression(finalizedPayload, pCtx.getSourceFile(), lastOp != -1?finalizedPayload.firstNonSymbol().getEgressType():returnType, pCtx.getParserConfiguration(), literalOnly == 1);
       }
       else {
         try {

@@ -78,12 +78,22 @@ public class TypesAndInferenceTests extends AbstractTest {
   }
 
   public void testGenericInference2() {
-    ParserContext ctx;
-    MVEL.analysisCompile("$result = person.maptributes['fooey'].name",
-            ctx = ParserContext.create().stronglyTyped().withInput("person", Person.class));
-
-    assertEquals(String.class, ctx.getVarOrInputTypeOrNull("$result"));
+    testExpressionType("$result = person.maptributes['fooey'].name", String.class, "person", Person.class);
   }
+  
+  public void testGenericInference3() {
+    testExpressionType("$result = (payload.indexOf('test2') == 0 or payload.indexOf('test2') == 0)", Boolean.class, "payload", String.class);
+  }
+
+  private void testExpressionType(String expression, Class outputClass, String inputVariable, Class inputVariableClass)
+  {
+    ParserContext ctx;
+    MVEL.analysisCompile(expression,
+          ctx = ParserContext.create().stronglyTyped().withInput(inputVariable, inputVariableClass));
+
+    assertEquals(outputClass, ctx.getVarOrInputTypeOrNull("$result"));
+ }
+
 
   public void testVarInputs() {
     ParserContext pCtx = ParserContext.create();
