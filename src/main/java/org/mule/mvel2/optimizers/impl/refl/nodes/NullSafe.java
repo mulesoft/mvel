@@ -24,10 +24,7 @@ public class NullSafe implements AccessorNode {
   }
   
   public NullSafe(char[] expr, int start, int offset, ParserContext pCtx) {
-    this.expr = expr;
-    this.start = start;
-    this.offset = offset;
-    this.pCtx = pCtx;
+	  this(expr, start, offset, pCtx, true);
   }
 
   public Object getValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory) {
