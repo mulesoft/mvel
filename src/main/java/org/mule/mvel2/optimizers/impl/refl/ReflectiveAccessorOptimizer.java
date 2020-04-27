@@ -201,7 +201,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
     this.length = end - start;
 
 
-    this.first = true;
+    this.first = root;
     this.ctx = ctx;
     this.thisRef = thisRef;
     this.variableFactory = factory;
@@ -770,7 +770,7 @@ public class ReflectiveAccessorOptimizer extends AbstractOptimizer implements Ac
           nullSafe = true;
         }
         else {
-          addAccessorNode(new NullSafe(property.toCharArray(), 0, property.length(), pCtx));
+          addAccessorNode(new NullSafe(property.toCharArray(), 0, property.length(), pCtx, false));
         }
         return null;
       }

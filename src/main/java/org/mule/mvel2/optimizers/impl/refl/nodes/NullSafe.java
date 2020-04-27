@@ -13,19 +13,25 @@ public class NullSafe implements AccessorNode {
   private int offset;
   private ParserContext pCtx;
   private Accessor innerAccessor;
+  private boolean root = true;
 
-  public NullSafe(char[] expr, int start, int offset, ParserContext pCtx) {
+  public NullSafe(char[] expr, int start, int offset, ParserContext pCtx, boolean root) {
     this.expr = expr;
     this.start = start;
     this.offset = offset;
     this.pCtx = pCtx;
+    this.root  = root;
+  }
+  
+  public NullSafe(char[] expr, int start, int offset, ParserContext pCtx) {
+    this(expr, start, offset, pCtx, true);
   }
 
   public Object getValue(Object ctx, Object elCtx, VariableResolverFactory variableFactory) {
     if (ctx == null) return null;
     if(innerAccessor == null) {
       innerAccessor = OptimizerFactory.getAccessorCompiler(OptimizerFactory.SAFE_REFLECTIVE)
-              .optimizeAccessor(pCtx, expr, start, offset, ctx, elCtx, variableFactory, true, ctx.getClass());
+              .optimizeAccessor(pCtx, expr, start, offset, ctx, elCtx, variableFactory, root, ctx.getClass());
     }
 
     // This is intended to avoid an infinite recursion.
