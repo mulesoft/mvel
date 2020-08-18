@@ -1,4 +1,5 @@
 projectType: runtime
 jdkTool: JDK7
 enableAllureTestReportStage: false
+enableSonarQubeStage: false
 
