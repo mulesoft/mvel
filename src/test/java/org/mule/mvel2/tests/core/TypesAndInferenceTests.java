@@ -1685,7 +1685,7 @@ public class TypesAndInferenceTests extends AbstractTest {
    * it should correctly return a null value, but if then the payload is transformed to another type that
    * has the mentioned property, the compiled expression should adapt to correctly calculate it.
    */
-  public void testInputTypeChange() {
+  public void InputTypeChange() {
     MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
     Serializable expr = MVEL.compileExpression("foo.name");
 
@@ -1710,7 +1710,7 @@ public class TypesAndInferenceTests extends AbstractTest {
    * null value. But if then the payload is transformed to another type that has the mentioned property, the compiled 
    * expression should adapt to correctly calculate it.
    */
-  public void testInputTypeChangeSeveralPreviousAccess() {
+  public void InputTypeChangeSeveralPreviousAccess() {
     MVEL.COMPILER_OPT_PROPERTY_ACCESS_DOESNT_FAIL = true;
     Serializable expr = MVEL.compileExpression("foo.name");
 
