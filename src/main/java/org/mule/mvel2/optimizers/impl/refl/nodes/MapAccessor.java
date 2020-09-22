@@ -35,12 +35,14 @@ public class MapAccessor implements AccessorNode {
   }
 
   public Object getValue(Object ctx, Object elCtx, VariableResolverFactory vrf) {
-    if (nextNode != null) {
-      return nextNode.getValue(((Map) ctx).get(property), elCtx, vrf);
+    if (ctx instanceof Map) {
+      if (nextNode != null) {
+        return nextNode.getValue(((Map) ctx).get(property), elCtx, vrf);
+      } else {
+        return ((Map) ctx).get(property);
+      }
     }
-    else {
-      return ((Map) ctx).get(property);
-    }
+    return null;
   }
 
   public Object setValue(Object ctx, Object elCtx, VariableResolverFactory vars, Object value) {
