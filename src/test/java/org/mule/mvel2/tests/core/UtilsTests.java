@@ -123,7 +123,6 @@ public class UtilsTests extends TestCase {
     assertThat(soundex("ashcraft"), is(soundex("ashcroft")));
     assertThat(soundex("test"), is(not(soundex("testst"))));
     assertThat(soundex("robert"), is(not(soundex("rubin"))));
-
   }
 
 }
