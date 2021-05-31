@@ -3,6 +3,10 @@ package org.mule.mvel2.tests.core;
 import junit.framework.TestCase;
 import org.mule.mvel2.MVEL;
 import org.mule.mvel2.util.FastList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+import static org.mule.mvel2.util.Soundex.soundex;
 import org.mule.mvel2.util.StringAppender;
 
 import java.util.HashMap;
@@ -110,6 +114,16 @@ public class UtilsTests extends TestCase {
     MVEL.eval("list = []; list.add('value')", map);
 
     assertEquals(1, ((List) map.get("list")).size());
+  }
+
+  public void testSoundex() {
+    assertThat(soundex("aoeuoeuoe"), is(soundex("youeouuuu")));
+    assertThat(soundex("test"), is(soundex("tst")));
+    assertThat(soundex("rubert"), is(soundex("robert")));
+    assertThat(soundex("ashcraft"), is(soundex("ashcroft")));
+    assertThat(soundex("test"), is(not(soundex("testst"))));
+    assertThat(soundex("robert"), is(not(soundex("rubin"))));
+
   }
 
 }
