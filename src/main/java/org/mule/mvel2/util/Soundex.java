@@ -63,9 +63,6 @@ public class Soundex {
       }
     }
 
-    if (res.length() == 0)
-      return null;
-
     for (int i = res.length(); i < 4; i++)
       res.append('0');
 
