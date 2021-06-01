@@ -1,5 +1,5 @@
 projectType: runtime
-jdkTool: JDK7
+jdkTool: JDK8
 enableAllureTestReportStage: false
 enableSonarQubeStage: false
 mavenTool: M3
